@@ -1,0 +1,38 @@
+1. Timeout after committed invoice (recoverable)
+"retry"
+2. Retry persisted event; destination idempotency prevents a second invoice
+{
+  "shipment-SHP-001": "done"
+}
+3. Duplicate delivery
+"done"
+4. Invalid quantity quarantined
+"quarantined"
+5. Accounting-owned paid status flows back to warehouse
+{
+  "shipment-SHP-001": "done",
+  "shipment-SHP-002": "quarantined",
+  "status-SHP-001-2": "done"
+}
+6. Reconciliation shows the rejected shipment and unresolved event
+{
+  "accounting_invoices": 1,
+  "event_states": {
+    "done": 2,
+    "quarantined": 1
+  },
+  "exception_count": 1,
+  "exceptions": [
+    {
+      "reasons": [
+        "missing_invoice"
+      ],
+      "shipment_id": "SHP-002"
+    }
+  ],
+  "healthy": false,
+  "matched": 1,
+  "unresolved_events": 1,
+  "warehouse_shipments": 2
+}
+Expected demo exception remains visible. Run audit or reconcile to inspect it.
